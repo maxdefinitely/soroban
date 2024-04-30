@@ -3,7 +3,7 @@
 #	written by Maksims Bogatirjovs
 
 """ IMPORTING LIBRARIES: """
-import re, sqlite3
+import re, sqlite3, random
 from os import system, name
 from time import sleep, time
 
@@ -15,7 +15,7 @@ TICKET_PASS_REQUIREMENT = 10
 TICKET_FILE = "tickets.txt"
 DB_FILE = "soroban.db"
 
-""" DATABASE SETUP: 
+""" DATABASE SETUP:
 """
 CONN = sqlite3.connect(DB_FILE)
 CURSOR = CONN.cursor()
@@ -32,8 +32,8 @@ if not CURSOR.fetchone()[0]:
 CONN.commit()
 
 
-""" 
-FUNCTION DEFINITIONS: 
+"""
+FUNCTION DEFINITIONS:
 """
 
 #
@@ -49,7 +49,7 @@ def clear():
 def countdown(i, arg=0):
 	"""
 	Countdown starting from i.
-	
+
 	: param i     :  number to start counting down from
 	: type i        :  int
 	: param arg :  message trigger
@@ -67,14 +67,14 @@ def banner(x=0, y=0):
 	Clear screen and print a banner.
 	y=0 prints default banner: 'Welcome to practice Soroban'
 	y=1 prints banner: 'Congrats. You have finished Sofoban BA100'
-	
+
 	: param x                      :  pause lenght and printing speed (default: 0 fastest/instant)
 	: type x                         :  int
 	: param y                      :  banner trigger
 	: type y                         :  int
 	: param BANNER_FILE  :  file name of the banner
 	: type BANNER_FILE     :  GLOBAL tuple
-	: return                          :  clear screen and print a banner one line at a time 
+	: return                          :  clear screen and print a banner one line at a time
 	                                         or instantly (depending on 'x' speed)
 	"""
 	""" Clear screen and pause x seconds."""
@@ -92,7 +92,7 @@ def sql_auth(do, upass=""):
 		* check if username exists (Return: True/False)
 		* register a new user
 		* check if username matches password (Return: True/False)
-	
+
 	: param do         :  case trigger
 	: type do            :  str
 	: param upass     :  password
@@ -142,7 +142,7 @@ def do_ticket():
 		""" Get unfinished ticket ID"""
 		ticket_todo = CURSOR.fetchone()[0]
 	except TypeError:
-		""" No unfinished tickets found. 
+		""" No unfinished tickets found.
 		Select one ticket with highest ID for the current user."""
 		CURSOR.execute(f"SELECT max(ticket_id) FROM assignments WHERE user_id = (SELECT id FROM users WHERE user_name = '{UNAME}')")
 		""" If such ticket exists... """
@@ -164,7 +164,10 @@ def do_ticket():
 	""" Print ticket number."""
 	print(INDENT_TEXT + f"TICKET NUMBER: {ticket_todo}")
 	""" Initialize 10 problems one at a time:"""
-	for i in range(10):
+	# used to be this
+	# for i in range(10):
+	# now it's random:⬇↓
+	for i in random.sample(range(10), 10):
 		CURSOR.execute(f"SELECT problem FROM problems WHERE id = {ticket_todo*10+i-9}")
 		problem = CURSOR.fetchall()[0][0]
 		""" Take user input for each problem..."""
@@ -189,7 +192,7 @@ def do_ticket():
 def asker(do, arg=True):
 	"""
 	Input retrieval and validation.
-	
+
 	: param do                     :  case trigger
 	: type do                        :  str
 	: param arg                    :  in 'get_user_name' case: message trigger
@@ -353,7 +356,7 @@ def doer(do):
 #
 #
 def main():
-	""" The main logic is achieved in a loop with 
+	""" The main logic is achieved in a loop with
 		  the function doer(do):
 		      * main() functions as a router
 		      * doer(do) executes the logic
@@ -385,7 +388,7 @@ def main():
 """ Nothing left to do. Script stops here."""
 
 
-""" Call main() 
+""" Call main()
 if being run as the main program.
 """
 if __name__ == "__main__":
